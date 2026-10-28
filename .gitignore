@@ -8,9 +8,12 @@
 !/.yarn/releases
 !/.yarn/plugins
 !/.yarn/sdks
+!/.yarn/patches
 
 # testing
 /coverage
+*.tsbuildinfo
+/.omo/evidence/
 
 # next.js
 /.next/
