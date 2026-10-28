@@ -7,11 +7,15 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 // You might need to insert additional domains in script-src if you are using external services
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is;
+  object-src 'none';
+  base-uri 'self';
+  frame-ancestors 'none';
+  form-action 'self';
+  script-src 'self' 'unsafe-inline' ${process.env.NODE_ENV === 'development' ? "'unsafe-eval'" : ''} https://giscus.app https://analytics.umami.is;
   style-src 'self' 'unsafe-inline';
-  img-src * blob: data:;
+  img-src 'self' https: blob: data:;
   media-src *.s3.amazonaws.com;
-  connect-src *;
+  connect-src 'self' https://giscus.app https://analytics.umami.is;
   font-src 'self';
   frame-src giscus.app
 `
@@ -66,7 +70,11 @@ module.exports = () => {
       dirs: ['app', 'components', 'layouts', 'scripts'],
     },
     images: {
-      domains: ['picsum.photos', 'download.logo.wine'],
+      remotePatterns: [
+        { protocol: 'https', hostname: 'picsum.photos', port: '', pathname: '/**' },
+        { protocol: 'https', hostname: 'download.logo.wine', port: '', pathname: '/**' },
+      ],
+      dangerouslyAllowSVG: false,
     },
 
     async headers() {

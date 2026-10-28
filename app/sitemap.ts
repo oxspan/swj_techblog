@@ -1,10 +1,11 @@
 import { MetadataRoute } from 'next'
+import { publishedPosts } from '../lib/publication.mjs'
 import { allBlogs } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = siteMetadata.siteUrl
-  const blogRoutes = allBlogs.map((post) => ({
+  const blogRoutes = publishedPosts(allBlogs).map((post) => ({
     url: `${siteUrl}/${post.path}`,
     lastModified: post.lastmod || post.date,
   }))

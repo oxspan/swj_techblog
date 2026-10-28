@@ -1,7 +1,7 @@
 import { defineDocumentType, ComputedFields, makeSource } from 'contentlayer2/source-files'
 import { writeFileSync } from 'fs'
 import readingTime from 'reading-time'
-import { slug } from 'github-slugger'
+import { publishedPosts, publishedTagCounts } from './lib/publication.mjs'
 import path from 'path'
 import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 // Remark packages
@@ -23,9 +23,9 @@ import rehypePrismPlus from 'rehype-prism-plus'
 import rehypePresetMinify from 'rehype-preset-minify'
 import siteMetadata from './data/siteMetadata'
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer.js'
+import type { MDXBlog } from 'pliny/utils/contentlayer.js'
 
 const root = process.cwd()
-const isProduction = process.env.NODE_ENV === 'production'
 
 // heroicon mini link
 const icon = fromHtmlIsomorphic(
@@ -60,31 +60,19 @@ const computedFields: ComputedFields = {
 /**
  * Count the occurrences of all tags across blog posts and write to json file
  */
-function createTagCount(allBlogs) {
-  const tagCount: Record<string, number> = {}
-  allBlogs.forEach((file) => {
-    if (file.tags && (!isProduction || file.draft !== true)) {
-      file.tags.forEach((tag) => {
-        const formattedTag = slug(tag)
-        if (formattedTag in tagCount) {
-          tagCount[formattedTag] += 1
-        } else {
-          tagCount[formattedTag] = 1
-        }
-      })
-    }
-  })
+function createTagCount(allBlogs: readonly MDXBlog[]) {
+  const tagCount = publishedTagCounts(allBlogs)
   writeFileSync('./app/tag-data.json', JSON.stringify(tagCount))
 }
 
-function createSearchIndex(allBlogs) {
+function createSearchIndex(allBlogs: readonly MDXBlog[]) {
   if (
     siteMetadata?.search?.provider === 'kbar' &&
     siteMetadata.search.kbarConfig.searchDocumentsPath
   ) {
     writeFileSync(
       `public/${siteMetadata.search.kbarConfig.searchDocumentsPath}`,
-      JSON.stringify(allCoreContent(sortPosts(allBlogs)))
+      JSON.stringify(allCoreContent(sortPosts(publishedPosts(allBlogs))))
     )
     console.log('Local search index generated...')
   }
