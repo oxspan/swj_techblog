@@ -35,8 +35,7 @@ const siteMetadata = {
     // },
   },
   newsletter: {
-    // supports mailchimp, buttondown, convertkit, klaviyo, revue, emailoctopus
-    // Please add your .env file and modify it according to your selection
+    // The local API route supports Buttondown; set BUTTONDOWN_API_KEY in .env.local.
     provider: 'buttondown',
   },
   comments: {

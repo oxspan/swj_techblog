@@ -1,9 +1,8 @@
-import { NewsletterAPI } from 'pliny/newsletter'
 import siteMetadata from '@/data/siteMetadata'
+import { createNewsletterHandler } from '../../../lib/newsletter.mjs'
 
-const handler = NewsletterAPI({
-  // @ts-ignore
-  provider: siteMetadata.newsletter.provider,
-})
-
-export { handler as GET, handler as POST }
+export const POST = createNewsletterHandler(() => ({
+  siteUrl: siteMetadata.siteUrl,
+  provider: siteMetadata.newsletter?.provider,
+  apiKey: process.env.BUTTONDOWN_API_KEY,
+}))
