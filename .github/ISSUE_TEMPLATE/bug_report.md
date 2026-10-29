@@ -26,8 +26,8 @@ If applicable, add screenshots to help explain your problem.
 **System Info (if dev / build issue):**
 
 - OS: [e.g. iOS]
-- Node version (please ensure you are using 14+)
-- Npm version
+- Node version (24.x)
+- Yarn version (4.18.1)
 
 **Browser Info (if display / formatting issue):**
 

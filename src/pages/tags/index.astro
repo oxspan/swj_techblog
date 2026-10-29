@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { getTags } from '../../lib/catalog'
+const tags = await getTags()
+---
+<BaseLayout title="태그">
+  <div class="page">
+    <p class="eyebrow">Tags</p>
+    <h1 class="page-title">태그</h1>
+    <p class="lede">주제로 기록을 좁혀 봅니다.</p>
+    <ul class="record-list">
+      {tags.map((tag) => <li><span>{tag.count}</span><article><h3><a href={`/tags/${tag.id}`}>#{tag.label}</a></h3></article></li>)}
+    </ul>
+  </div>
+</BaseLayout>

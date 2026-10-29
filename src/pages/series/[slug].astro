@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import PostList from '../../components/PostList.astro'
+import { getCatalog } from '../../lib/catalog'
+
+export async function getStaticPaths() {
+  return (await getCatalog()).series.map((series) => ({
+    params: { slug: series.id },
+    props: { series },
+  }))
+}
+const { series } = Astro.props
+---
+<BaseLayout title={series.data.title} description={series.data.description}>
+  <div class="page">
+    <p class="eyebrow">시리즈 · 공개 글 {series.posts.length}편</p>
+    <h1 class="page-title">{series.data.title}</h1>
+    <p class="lede">{series.data.description}</p>
+    <p><a href={`/blog/${series.posts[0]?.id}`}>첫 글부터 읽기 →</a></p>
+    <div class="section-heading"><h2>읽는 순서</h2></div>
+    <PostList posts={series.posts} ordered />
+  </div>
+</BaseLayout>

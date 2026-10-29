@@ -1,0 +1,6 @@
+{
+  "slug": "spring-transactions",
+  "title": "Spring 트랜잭션",
+  "description": "트랜잭션의 개념과 특징을 정리하고, 실제로 사용하는 옵션을 알아봅니다.",
+  "posts": ["spring/[Spring]_spring_transaction", "spring/[Spring]_spring_transaction_2"]
+}

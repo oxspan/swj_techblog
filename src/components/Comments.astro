@@ -1,0 +1,50 @@
+---
+const repository = import.meta.env.PUBLIC_GISCUS_REPO
+const repositoryId = import.meta.env.PUBLIC_GISCUS_REPOSITORY_ID
+const category = import.meta.env.PUBLIC_GISCUS_CATEGORY
+const categoryId = import.meta.env.PUBLIC_GISCUS_CATEGORY_ID
+const configured = Boolean(repository && repositoryId && category && categoryId)
+---
+
+<section class="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title">댓글</h2>
+  {
+    configured ? (
+      <div
+        class="giscus-container"
+        data-repo={repository}
+        data-repo-id={repositoryId}
+        data-category={category}
+        data-category-id={categoryId}
+      />
+    ) : (
+      <p class="service-unavailable">댓글 서비스가 아직 연결되지 않았습니다.</p>
+    )
+  }
+</section>
+
+{
+  configured && (
+    <script>
+      const container = document.querySelector<HTMLElement>('.giscus-container')
+      if (container) {
+        const script = document.createElement('script')
+        script.src = 'https://giscus.app/client.js'
+        script.async = true
+        script.crossOrigin = 'anonymous'
+        script.dataset.repo = container.dataset.repo ?? ''
+        script.dataset.repoId = container.dataset.repoId ?? ''
+        script.dataset.category = container.dataset.category ?? ''
+        script.dataset.categoryId = container.dataset.categoryId ?? ''
+        script.dataset.mapping = 'pathname'
+        script.dataset.strict = '1'
+        script.dataset.reactionsEnabled = '1'
+        script.dataset.emitMetadata = '0'
+        script.dataset.inputPosition = 'top'
+        script.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
+        script.dataset.lang = 'ko'
+        container.append(script)
+      }
+    </script>
+  )
+}

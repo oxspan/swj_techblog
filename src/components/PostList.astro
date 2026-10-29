@@ -1,0 +1,43 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { formatDate } from '../lib/format'
+
+interface Props {
+  readonly posts: readonly CollectionEntry<'blog'>[]
+  readonly ordered?: boolean
+  readonly filterable?: boolean
+}
+
+const { posts, ordered = false, filterable = false } = Astro.props
+const List = ordered ? 'ol' : 'ul'
+---
+
+{
+  posts.length > 0 ? (
+    <List class:list={['record-list', { ordered }]}>
+      {posts.map((post, index) => (
+        <li
+          data-record-item={filterable ? '' : undefined}
+          data-search-text={filterable ? `${post.data.title} ${post.data.summary ?? ''} ${post.data.tags.join(' ')}`.toLocaleLowerCase('ko') : undefined}
+          data-tags={filterable ? post.data.tags.join('|').toLocaleLowerCase('ko') : undefined}
+        >
+          {ordered ? (
+            <span class="chapter-number">{String(index + 1).padStart(2, '0')}</span>
+          ) : (
+            <time class="record-date" datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+          )}
+          <article>
+            <p class="record-meta">
+              {ordered && <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>}
+              {post.data.tags[0] && <span>{post.data.tags[0]}</span>}
+            </p>
+            <h3><a href={`/blog/${post.id}`}>{post.data.title}</a></h3>
+            {post.data.summary && <p>{post.data.summary}</p>}
+          </article>
+        </li>
+      ))}
+    </List>
+  ) : (
+    <p class="empty-state">아직 공개된 기록이 없습니다.</p>
+  )
+}

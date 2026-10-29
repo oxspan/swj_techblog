@@ -1,0 +1,7 @@
+{
+  "title": "BIBOT 자동 영수증 경비 처리 솔루션",
+  "description": "OCR을 통한 영수증 경비 처리 자동화 프로젝트입니다. 팀장과 백엔드 개발을 맡아 이벤트 소싱 로직, 멀티모듈 구조와 Keycloak 기반 SSO를 구현했습니다.",
+  "imgSrc": "/static/images/bibot-project-thumbnail.gif",
+  "href": "https://github.com/BiBot-org",
+  "relatedPosts": []
+}

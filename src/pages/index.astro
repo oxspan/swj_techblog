@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import NewsletterForm from '../components/NewsletterForm.astro'
+import PostList from '../components/PostList.astro'
+import SeriesList from '../components/SeriesList.astro'
+import { getCatalog } from '../lib/catalog'
+
+const { posts, series, projects, editorial } = await getCatalog()
+const featuredPosts = editorial.featuredPosts.flatMap((id) => {
+  const post = posts.find((entry) => entry.id === id)
+  return post ? [post] : []
+})
+const featuredSeries = editorial.featuredSeries.flatMap((id) => {
+  const item = series.find((entry) => entry.id === id)
+  return item ? [item] : []
+})
+---
+
+<BaseLayout>
+  <div class="page">
+    <section class="hero" aria-labelledby="home-title">
+      <div>
+        <p class="eyebrow">손우진 · 백엔드 개발과 기록</p>
+        <h1 id="home-title">Spring의 원리와<br />백엔드의 시행착오.</h1>
+        <p class="lede">느려진 페이징 쿼리, 처음 도입한 도메인 설계.<br />한 번 겪은 문제는 다시 풀지 않도록 기록합니다.</p>
+        <p><a href="/about">어떤 개발자인가요? →</a></p>
+      </div>
+      <nav class="selected-records" aria-label="대표 기록">
+        <p>이런 고민을 남겼습니다.</p>
+        {
+          featuredPosts.map((post, index) => (
+            <a href={`/blog/${post.id}`}>
+              <span class="topic">{index === 0 ? '문제 해결' : '설계 경험'}</span>
+              <strong>{post.data.title}</strong>
+              <span class="summary">{post.data.summary}</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </a>
+          ))
+        }
+      </nav>
+    </section>
+    <section aria-labelledby="recent-title">
+      <div class="section-heading"><h2 id="recent-title">최근 기록</h2><a href="/blog">모든 기록 →</a></div>
+      <PostList posts={posts.slice(0, 5)} />
+    </section>
+    <section aria-labelledby="series-title">
+      <div class="section-heading"><h2 id="series-title">시리즈</h2><a href="/series">모든 시리즈 →</a></div>
+      <SeriesList series={featuredSeries} />
+    </section>
+    <section aria-labelledby="project-title">
+      <div class="section-heading"><h2 id="project-title">프로젝트</h2><a href="/projects">프로젝트 보기 →</a></div>
+      <ul class="record-list">
+        {projects.map((project) => <li><span></span><article><h3><a href={project.data.href}>{project.data.title}</a></h3><p>{project.data.description}</p></article></li>)}
+      </ul>
+    </section>
+    <NewsletterForm />
+  </div>
+</BaseLayout>

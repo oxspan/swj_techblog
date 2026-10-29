@@ -1,0 +1,21 @@
+---
+import { slug } from 'github-slugger'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import PostList from '../../components/PostList.astro'
+import { getCatalog, getTags } from '../../lib/catalog'
+export async function getStaticPaths() {
+  const [{ posts }, tags] = await Promise.all([getCatalog(), getTags()])
+  return tags.map((tag) => ({
+    params: { tag: tag.id },
+    props: { tag, posts: posts.filter((post) => post.data.tags.some((label) => slug(label) === tag.id)) },
+  }))
+}
+const { tag, posts } = Astro.props
+---
+<BaseLayout title={`#${tag.label}`}>
+  <div class="page">
+    <p class="eyebrow">Tag · {posts.length}편</p>
+    <h1 class="page-title">#{tag.label}</h1>
+    <PostList posts={posts} />
+  </div>
+</BaseLayout>

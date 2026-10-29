@@ -1,0 +1,7 @@
+{
+  "title": "Twitter Clone Project",
+  "description": "트위터를 클론하며 프론트엔드, 백엔드와 배포 흐름을 함께 경험한 프로젝트입니다.",
+  "imgSrc": "/static/images/twitter-clone-thumbnail.png",
+  "href": "https://github.com/swj9707/twitter-clone-api-server",
+  "relatedPosts": []
+}

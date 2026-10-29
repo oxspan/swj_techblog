@@ -1,0 +1,16 @@
+{
+  "slug": "understanding-spring",
+  "title": "알고쓰자 Spring",
+  "description": "Spring의 시작과 설계, AOP와 DI, 트랜잭션과 Core를 순서대로 살펴봅니다.",
+  "posts": [
+    "spring/spring_knowhow_01",
+    "spring/spring_knowhow_02",
+    "spring/spring_knowhow_03",
+    "spring/spring_knowhow_04",
+    "spring/spring_knowhow_05",
+    "spring/spring_knowhow_06",
+    "spring/spring_knowhow_07",
+    "spring/spring_knowhow_08",
+    "spring/spring_knowhow_09"
+  ]
+}

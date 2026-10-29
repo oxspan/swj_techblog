@@ -1,0 +1,26 @@
+---
+interface Props {
+  readonly series: readonly {
+    readonly id: string
+    readonly data: { readonly title: string; readonly description: string }
+    readonly posts: readonly unknown[]
+  }[]
+}
+
+const { series } = Astro.props
+---
+
+<ul class="series-list">
+  {
+    series.map((item) => (
+      <li>
+        <a href={`/series/${item.id}`}>
+          <span class="series-count">공개 글 {item.posts.length}편</span>
+          <strong>{item.data.title}</strong>
+          <span>{item.data.description}</span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>

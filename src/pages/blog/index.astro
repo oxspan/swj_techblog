@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import PostList from '../../components/PostList.astro'
+import { getCatalog } from '../../lib/catalog'
+const { posts } = await getCatalog()
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((left, right) => left.localeCompare(right, 'ko'))
+---
+<BaseLayout title="기록" description="백엔드 개발과 Spring을 공부하고 문제를 해결한 기록">
+  <div class="page">
+    <p class="eyebrow">Records</p>
+    <h1 class="page-title">기록</h1>
+    <p class="lede">직접 만들고 운영하며 마주친 문제와 기술의 안쪽을 정리합니다.</p>
+    <form class="record-filters" data-record-filters>
+      <label>기록 검색<input type="search" name="query" autocomplete="off" placeholder="제목, 요약, 태그" /></label>
+      <label>태그<select name="tag"><option value="">모든 태그</option>{tags.map((tag) => <option value={tag.toLocaleLowerCase('ko')}>{tag}</option>)}</select></label>
+    </form>
+    <p class="record-filter-status" data-filter-status aria-live="polite">{posts.length}개의 기록</p>
+    <PostList posts={posts} filterable />
+  </div>
+</BaseLayout>
+
+<script>
+  const filters = document.querySelector<HTMLFormElement>('[data-record-filters]')
+  const status = document.querySelector<HTMLElement>('[data-filter-status]')
+  const items = [...document.querySelectorAll<HTMLElement>('[data-record-item]')]
+  const applyFilters = (): void => {
+    if (!filters) return
+    const values = new FormData(filters)
+    const query = String(values.get('query') ?? '').trim().toLocaleLowerCase('ko')
+    const tag = String(values.get('tag') ?? '').toLocaleLowerCase('ko')
+    let visible = 0
+    for (const item of items) {
+      const matchesQuery = query.length === 0 || (item.dataset.searchText ?? '').includes(query)
+      const matchesTag = tag.length === 0 || (item.dataset.tags ?? '').split('|').includes(tag)
+      item.hidden = !(matchesQuery && matchesTag)
+      if (!item.hidden) visible += 1
+    }
+    if (status) status.textContent = visible > 0 ? `${visible}개의 기록` : '일치하는 기록이 없습니다.'
+  }
+  filters?.addEventListener('input', applyFilters)
+</script>

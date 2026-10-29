@@ -1,0 +1,207 @@
+---
+import 'katex/dist/katex.min.css'
+import '../styles/global.css'
+import { navigation, site } from '../config'
+
+interface Props {
+  readonly title?: string
+  readonly description?: string
+  readonly image?: string
+  readonly article?: boolean
+}
+
+const { title, description = site.description, image = site.socialImage, article = false } = Astro.props
+const pageTitle = title ? `${title} · ${site.title}` : site.title
+const canonical = new URL(Astro.url.pathname, site.url)
+const socialImage = new URL(image, site.url)
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/static/favicons/favicon.ico" sizes="any" />
+    <link rel="alternate" type="application/rss+xml" title={site.title} href="/feed.xml" />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{pageTitle}</title>
+    <script is:inline>
+      const savedTheme = localStorage.getItem('theme')
+      if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.dataset.theme = savedTheme
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문 바로가기</a>
+    <header class="site-header frame">
+      <a class="brand" href="/" aria-label={`${site.title} 홈`}>
+        {site.title}<span aria-hidden="true">.</span>
+      </a>
+      <div class="header-right">
+        <nav class="desktop-nav" aria-label="주 메뉴">
+          {navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+        </nav>
+        <div class="header-tools">
+          <button class="icon-button" type="button" data-search-open aria-label="글 검색">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg>
+          </button>
+          <button class="theme-button" type="button" data-theme-toggle aria-label="화면 테마 변경">
+            <span data-theme-label>시스템</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="8"></circle>
+              <path d="M12 4a8 8 0 0 0 0 16Z"></path>
+            </svg>
+          </button>
+          <button class="icon-button menu-button" type="button" data-menu-open aria-label="메뉴 열기">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1"><slot /></main>
+
+    <footer class="site-footer frame">
+      <p>© {new Date().getFullYear()} 손우진</p>
+      <nav aria-label="하단 메뉴">
+        <a href="/tags">태그</a><a href="/feed.xml">RSS</a><a href={site.github}>GitHub</a>
+        <a href={`mailto:${site.email}`}>메일</a>
+      </nav>
+    </footer>
+
+    <dialog class="menu-dialog" data-menu-dialog aria-labelledby="menu-title">
+      <div class="dialog-header">
+        <h2 id="menu-title">메뉴</h2>
+        <button class="icon-button" type="button" data-menu-close aria-label="메뉴 닫기">×</button>
+      </div>
+      <nav aria-label="모바일 메뉴">
+        {navigation.map((item) => <a href={item.href}>{item.label}</a>)}<a href="/tags">태그</a>
+      </nav>
+    </dialog>
+
+    <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+      <div class="dialog-header">
+        <h2 id="search-title">기록 검색</h2>
+        <button class="icon-button" type="button" data-search-close aria-label="검색 닫기">×</button>
+      </div>
+      <label for="global-search">제목, 요약 또는 태그</label>
+      <input id="global-search" type="search" autocomplete="off" data-search-input />
+      <p class="search-help" data-search-help>검색어를 두 글자 이상 입력해 주세요.</p>
+      <ul class="search-results" data-search-results></ul>
+    </dialog>
+
+    <script>
+      type SearchDocument = {
+        readonly title: string
+        readonly summary: string
+        readonly tags: readonly string[]
+        readonly href: string
+      }
+      const root = document.documentElement
+      const themeButton = document.querySelector<HTMLButtonElement>('[data-theme-toggle]')
+      const themeLabel = document.querySelector<HTMLElement>('[data-theme-label]')
+      const themes = ['system', 'light', 'dark'] as const
+      type Theme = (typeof themes)[number]
+      const readTheme = (): Theme => {
+        const saved = localStorage.getItem('theme')
+        return saved === 'light' || saved === 'dark' ? saved : 'system'
+      }
+      const applyTheme = (theme: Theme): void => {
+        if (theme === 'system') {
+          delete root.dataset.theme
+          localStorage.removeItem('theme')
+        } else {
+          root.dataset.theme = theme
+          localStorage.setItem('theme', theme)
+        }
+        if (themeLabel) themeLabel.textContent = theme === 'system' ? '시스템' : theme === 'light' ? '밝게' : '어둡게'
+      }
+      applyTheme(readTheme())
+      themeButton?.addEventListener('click', () => {
+        const current = readTheme()
+        const next = themes[(themes.indexOf(current) + 1) % themes.length]
+        if (next) applyTheme(next)
+      })
+      const connectDialog = (name: 'menu' | 'search'): HTMLDialogElement | null => {
+        const dialog = document.querySelector<HTMLDialogElement>(`[data-${name}-dialog]`)
+        const open = document.querySelector<HTMLButtonElement>(`[data-${name}-open]`)
+        const close = document.querySelector<HTMLButtonElement>(`[data-${name}-close]`)
+        open?.addEventListener('click', () => dialog?.showModal())
+        close?.addEventListener('click', () => dialog?.close())
+        dialog?.addEventListener('click', (event) => {
+          if (event.target === dialog) dialog.close()
+        })
+        dialog?.addEventListener('close', () => window.setTimeout(() => open?.focus(), 0))
+        return dialog
+      }
+      connectDialog('menu')
+      const searchDialog = connectDialog('search')
+      const searchInput = document.querySelector<HTMLInputElement>('[data-search-input]')
+      const searchHelp = document.querySelector<HTMLElement>('[data-search-help]')
+      const searchResults = document.querySelector<HTMLUListElement>('[data-search-results]')
+      let documents: readonly SearchDocument[] = []
+      searchDialog?.addEventListener('close', () => {
+        if (searchInput) searchInput.value = ''
+        if (searchResults) searchResults.replaceChildren()
+      })
+      searchInput?.addEventListener('focus', async () => {
+        if (documents.length > 0) return
+        if (searchHelp) searchHelp.textContent = '검색 색인을 불러오고 있습니다.'
+        try {
+          const response = await fetch('/search.json')
+          if (!response.ok) throw new Error(`Search index returned ${response.status}`)
+          documents = await response.json()
+          searchInput.dispatchEvent(new Event('input'))
+        } catch (error) {
+          if (searchHelp) {
+            searchHelp.textContent = navigator.onLine
+              ? '검색 색인을 불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요.'
+              : '오프라인 상태에서는 검색을 불러올 수 없습니다.'
+          }
+          if (!(error instanceof Error)) throw error
+        }
+      })
+      searchInput?.addEventListener('input', () => {
+        if (!searchResults || !searchHelp) return
+        const query = searchInput.value.trim().toLocaleLowerCase('ko')
+        searchResults.replaceChildren()
+        if (query.length < 2) {
+          searchHelp.textContent = '검색어를 두 글자 이상 입력해 주세요.'
+          return
+        }
+        const matches = documents.filter((entry) =>
+          [entry.title, entry.summary, ...entry.tags].some((value) =>
+            value.toLocaleLowerCase('ko').includes(query)
+          )
+        ).slice(0, 8)
+        searchHelp.textContent = matches.length > 0 ? `${matches.length}개 결과` : '일치하는 기록이 없습니다.'
+        for (const entry of matches) {
+          const item = document.createElement('li')
+          const link = document.createElement('a')
+          link.href = entry.href
+          const title = document.createElement('strong')
+          title.textContent = entry.title
+          const summary = document.createElement('span')
+          summary.textContent = entry.summary
+          link.append(title, summary)
+          item.append(link)
+          searchResults.append(item)
+        }
+      })
+      document.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+          event.preventDefault()
+          searchDialog?.showModal()
+          searchInput?.focus()
+        }
+      })
+    </script>
+  </body>
+</html>

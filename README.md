@@ -1,15 +1,17 @@
-![tailwind-nextjs-banner](/public/static/images/twitter-card.png)
+# 우진의 데브로그
 
-# 손우진 : 기술블로그
+Spring과 백엔드 시스템을 직접 만들고 문제를 풀며 얻은 내용을 기록하는 한국어 기술 블로그입니다.
+Astro의 정적 콘텐츠 우선 구조로 운영하고, 검색·테마·목차·구독처럼 필요한 상호작용만 작은
+브라우저 스크립트로 제공합니다.
 
-![image](https://github.com/swj9707/swj_techblog/assets/36991763/7dc90ff6-ef61-46a1-85e2-3ef651815f81)
+## 기술 구성
 
-- Next.js, Tailwind CSS Starter를 통해 생성 한 기술 블로그입니다.
+- Astro 7 Content Collections와 MDX
+- Tailwind CSS 4
+- Vercel adapter와 서버리스 뉴스레터 API
+- Node.js 24, Yarn 4.18.1
 
-## 개발 환경
-
-Node.js 24와 Yarn 4.18.1을 사용합니다. Node.js 22.22.1 이상인 22.x도 지원합니다.
-Yarn 실행 파일은 저장소에 포함되어 있습니다.
+## 로컬 실행
 
 ```bash
 nvm use
@@ -17,25 +19,34 @@ node .yarn/releases/yarn-4.18.1.cjs install --immutable
 node .yarn/releases/yarn-4.18.1.cjs dev
 ```
 
-Corepack 또는 Yarn이 설정되어 있으면 아래 명령을 사용할 수 있습니다.
+전역 Yarn이 준비되어 있다면 `node .yarn/releases/yarn-4.18.1.cjs` 대신 `yarn`을 사용할 수 있습니다.
 
 ```bash
-yarn lint        # 자동 수정 없는 검사
-yarn lint:fix    # 명시적으로 자동 수정
-yarn test        # 보안·의존성 호환 회귀 테스트
-yarn build       # 콘텐츠·Next.js·RSS 생성
-yarn typecheck   # 최초에는 build로 콘텐츠/라우트 타입 생성 필요
-yarn serve       # 빌드한 production 서버
-yarn audit       # 개발 도구를 포함한 모든 직접·간접 의존성 감사
+yarn check      # Astro 진단과 TypeScript 검사
+yarn test       # production build와 회귀 테스트
+yarn build      # Vercel 배포 산출물 생성
+yarn build:qa   # 로컬 실브라우저 QA용 Node 서버 산출물 생성
+yarn audit      # 직접·간접 의존성 보안 감사
 ```
 
-현재 업데이트 범위, Contentlayer 호환 패치와 운영 시 주의점은 [SECURITY.md](SECURITY.md)에 기록했습니다.
-알려진 의존성 취약점은 전체 감사에서 0건입니다. 새 공지가 발견되면 `yarn audit`는 종료 코드 1을 반환합니다.
+## 콘텐츠와 편집 정보
 
-## Reference
+- 글: `data/blog/**/*.mdx`
+- 작성자: `data/authors/*.mdx`
+- 시리즈: `data/series/*.json`
+- 프로젝트: `data/projects/*.json`
+- 홈 편집 순서: `data/editorial.json`
+- 사이트 설정: `src/config.ts`
 
-- [Next.js & Tailwind CSS Starter blog Repo ](https://github.com/timlrx/tailwind-nextjs-starter-blog)
+글 파일의 상대 경로가 공개 URL `/blog/<상대 경로>`가 됩니다. 기존 URL과 댓글 매핑을 보호하기
+위해 파일 이동이나 이름 변경은 리다이렉트 계획 없이 하지 않습니다. 레이아웃과 접근성 계약은
+[DESIGN.md](DESIGN.md)를 따릅니다.
 
-## Licence
+## 외부 서비스
 
-[MIT](https://github.com/timlrx/tailwind-nextjs-starter-blog/blob/main/LICENSE) © [Timothy Lin](https://www.timlrx.com)
+`.env.example`의 `PUBLIC_GISCUS_*` 값이 모두 있으면 글 하단 댓글을 연결합니다. 값이 없으면
+미설정 상태를 명시합니다. `BUTTONDOWN_API_KEY`가 없으면 뉴스레터 API는 503으로 응답합니다.
+
+## 라이선스
+
+[MIT](LICENSE)

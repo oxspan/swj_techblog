@@ -1,0 +1,6 @@
+{
+  "slug": "deep-dive",
+  "title": "숨 꾹 참고 딥다이브",
+  "description": "동기와 비동기부터 상태 기계, JPA까지. 익숙하게 쓰던 기술의 안쪽을 들여다봅니다.",
+  "posts": ["deepdive/deepdive-01", "deepdive/deepdive-02", "deepdive/deepdive-03", "deepdive/deepdive-04"]
+}

@@ -1,0 +1,15 @@
+---
+import { getEntry, render } from 'astro:content'
+import BaseLayout from '../layouts/BaseLayout.astro'
+const author = await getEntry('authors', 'default')
+if (!author) throw new TypeError('Default author is missing')
+const { Content } = await render(author)
+---
+<BaseLayout title="소개">
+  <div class="page narrow">
+    <p class="eyebrow">About</p>
+    <h1 class="page-title">손우진</h1>
+    <p class="lede">소통과 기록을 좋아하고, 당연해 보이는 기술도 원리부터 다시 질문하는 개발자입니다.</p>
+    <article class="article-body"><Content /></article>
+  </div>
+</BaseLayout>

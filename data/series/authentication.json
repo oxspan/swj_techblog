@@ -1,0 +1,6 @@
+{
+  "slug": "authentication",
+  "title": "Keycloak · NextAuth · Spring Boot",
+  "description": "서로 다른 애플리케이션의 인증을 연결하며 정리한 도입 과정입니다.",
+  "posts": ["keycloak/keycloak_nextauth_spring_00", "keycloak/keycloak_nextauth_spring_01"]
+}
